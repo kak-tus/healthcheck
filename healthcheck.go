@@ -15,8 +15,7 @@ type healthcheckConfig struct {
 	Listen string
 }
 
-// Server object
-type Server struct {
+type server struct {
 	logger   *zap.SugaredLogger
 	listener *http.Server
 }
@@ -38,7 +37,7 @@ type Check interface {
 	Check() (State, string)
 }
 
-var srv *Server
+var srv *server
 
 func init() {
 	appconf.Require("file:healthcheck.yml")
@@ -55,7 +54,7 @@ func init() {
 
 			logger := applog.GetLogger()
 
-			srv = &Server{
+			srv = &server{
 				logger: logger,
 				listener: &http.Server{
 					Addr: config.Listen,
