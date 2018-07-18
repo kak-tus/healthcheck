@@ -1,4 +1,6 @@
 /*
+Package healthcheck - universal HTTP healthcheck package
+
 Usage example
 
 First, create file with healthcheck configuration
