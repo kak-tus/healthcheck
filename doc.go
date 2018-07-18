@@ -46,5 +46,4 @@ Then you can define healthchecks
 		})
 	}
 */
-
 package healthcheck
