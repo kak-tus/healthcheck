@@ -23,25 +23,24 @@ type server struct {
 // State type
 type State int
 
-// StatePassing - check in passing state
-const StatePassing State = 200
+const (
+	// StatePassing - check in passing state
+	StatePassing State = iota
+	// StateWarning - check in warning state
+	StateWarning State = iota
+	// StateCritical - check in critical state
+	StateCritical State = iota
+)
 
-// StateWarning - check in warning state
-const StateWarning State = 429
-
-// StateCritical - check in critical state
-const StateCritical State = 500
-
-// Check implements healthcheck function
-type Check interface {
-	Check() (State, string)
+var stateMap = map[State]int{
+	1: 200,
+	2: 429,
+	3: 500,
 }
 
 var srv *server
 
 func init() {
-	appconf.Require("file:healthcheck.yml")
-
 	event.Init.AddHandler(
 		func() error {
 			cnf := appconf.GetConfig()["healthcheck"]
@@ -83,17 +82,17 @@ func init() {
 	)
 }
 
-// AddCheck add new HTTP check
-func AddCheck(path string, check Check) {
+// Add add new HTTP healthcheck
+func Add(path string, f func() (State, string)) {
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		srv.logger.Debug("Request ", path)
 
-		state, text := check.Check()
+		state, text := f()
 
 		srv.logger.Debug("Response state: ", state)
 
 		if state != StatePassing {
-			w.WriteHeader(int(state))
+			w.WriteHeader(stateMap[state])
 		}
 
 		_, err := fmt.Fprintf(w, text)
