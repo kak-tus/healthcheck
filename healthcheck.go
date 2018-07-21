@@ -67,12 +67,16 @@ func init() {
 				}
 			}()
 
+			srv.logger.Info("Started healthcheck listener")
+
 			return nil
 		},
 	)
 
 	event.Stop.AddHandler(
 		func() error {
+			srv.logger.Info("Stop healthcheck listener")
+
 			err := srv.listener.Shutdown(nil)
 			if err != nil {
 				return err
