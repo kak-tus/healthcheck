@@ -8,10 +8,7 @@ import (
 )
 
 func init() {
-	fileLdr, err := fileconf.NewLoader("etc")
-	if err != nil {
-		panic(err)
-	}
+	fileLdr := fileconf.NewLoader("etc")
 
 	appconf.RegisterLoader("file", fileLdr)
 
