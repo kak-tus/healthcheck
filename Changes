@@ -1,3 +1,6 @@
+2018-10-07 v0.5.1
+  - Support type conversions in config.
+
 2018-09-08 v0.5.0
   - Incorrect HTTP status bugfix.
 

@@ -7,7 +7,7 @@ import (
 	"git.aqq.me/go/app/appconf"
 	"git.aqq.me/go/app/applog"
 	"git.aqq.me/go/app/event"
-	"github.com/mitchellh/mapstructure"
+	"github.com/iph0/conf"
 	"go.uber.org/zap"
 )
 
@@ -47,7 +47,7 @@ func init() {
 			cnf := appconf.GetConfig()["healthcheck"]
 
 			var config healthcheckConfig
-			err := mapstructure.Decode(cnf, &config)
+			err := conf.Decode(cnf, &config)
 			if err != nil {
 				return err
 			}
