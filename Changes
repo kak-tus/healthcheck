@@ -1,3 +1,6 @@
+2018-10-07 v0.5.2
+  - New AddReq function to allow healthcheck get some data from request.
+
 2018-10-07 v0.5.1
   - Support type conversions in config.
 

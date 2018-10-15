@@ -104,3 +104,24 @@ func Add(path string, f func() (State, string)) {
 		}
 	})
 }
+
+// AddReq add new HTTP healthcheck with http.Request parameter
+// to allow get some data from request
+func AddReq(path string, f func(*http.Request) (State, string)) {
+	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		srv.logger.Debug("Request ", path)
+
+		state, text := f(r)
+
+		srv.logger.Debug("Response state: ", state)
+
+		if state != StatePassing {
+			w.WriteHeader(stateMap[state])
+		}
+
+		_, err := fmt.Fprintf(w, text)
+		if err != nil {
+			srv.logger.Error(err)
+		}
+	})
+}
