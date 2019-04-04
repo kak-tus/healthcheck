@@ -1,3 +1,6 @@
+2019-04-04 v0.5.3
+  - Go modules.
+
 2018-10-07 v0.5.2
   - New AddReq function to allow healthcheck get some data from request.
 

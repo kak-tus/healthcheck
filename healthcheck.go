@@ -16,7 +16,7 @@ type healthcheckConfig struct {
 }
 
 type server struct {
-	logger   *zap.SugaredLogger
+	log      *zap.SugaredLogger
 	listener *http.Server
 }
 
@@ -53,7 +53,7 @@ func init() {
 			}
 
 			srv = &server{
-				logger: applog.GetLogger().Sugar(),
+				log: applog.GetLogger().Sugar(),
 				listener: &http.Server{
 					Addr: config.Listen,
 				},
@@ -62,11 +62,11 @@ func init() {
 			go func() {
 				err = srv.listener.ListenAndServe()
 				if err != nil && err != http.ErrServerClosed {
-					srv.logger.Error(err)
+					srv.log.Error(err)
 				}
 			}()
 
-			srv.logger.Info("Started healthcheck listener")
+			srv.log.Info("Started healthcheck listener")
 
 			return nil
 		},
@@ -74,12 +74,15 @@ func init() {
 
 	event.Stop.AddHandler(
 		func() error {
-			srv.logger.Info("Stop healthcheck listener")
+			srv.log.Info("Stop healthcheck listener")
 
 			err := srv.listener.Shutdown(nil)
 			if err != nil {
 				return err
 			}
+
+			srv.log.Info("Stopped healthcheck listener")
+
 			return nil
 		},
 	)
@@ -88,11 +91,11 @@ func init() {
 // Add add new HTTP healthcheck
 func Add(path string, f func() (State, string)) {
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		srv.logger.Debug("Request ", path)
+		srv.log.Debug("Request ", path)
 
 		state, text := f()
 
-		srv.logger.Debug("Response state: ", state)
+		srv.log.Debug("Response state: ", state)
 
 		if state != StatePassing {
 			w.WriteHeader(stateMap[state])
@@ -100,7 +103,7 @@ func Add(path string, f func() (State, string)) {
 
 		_, err := fmt.Fprintf(w, text)
 		if err != nil {
-			srv.logger.Error(err)
+			srv.log.Error(err)
 		}
 	})
 }
@@ -109,11 +112,11 @@ func Add(path string, f func() (State, string)) {
 // to allow get some data from request
 func AddReq(path string, f func(*http.Request) (State, string)) {
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		srv.logger.Debug("Request ", path)
+		srv.log.Debug("Request ", path)
 
 		state, text := f(r)
 
-		srv.logger.Debug("Response state: ", state)
+		srv.log.Debug("Response state: ", state)
 
 		if state != StatePassing {
 			w.WriteHeader(stateMap[state])
@@ -121,7 +124,7 @@ func AddReq(path string, f func(*http.Request) (State, string)) {
 
 		_, err := fmt.Fprintf(w, text)
 		if err != nil {
-			srv.logger.Error(err)
+			srv.log.Error(err)
 		}
 	})
 }
