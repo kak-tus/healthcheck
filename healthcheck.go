@@ -91,11 +91,7 @@ func init() {
 // Add add new HTTP healthcheck
 func Add(path string, f func() (State, string)) {
 	http.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		srv.log.Debug("Request ", path)
-
 		state, text := f()
-
-		srv.log.Debug("Response state: ", state)
 
 		if state != StatePassing {
 			w.WriteHeader(stateMap[state])
