@@ -1,47 +1,17 @@
 /*
-Package healthcheck - universal HTTP healthcheck package
+Library for Consul HTTP healthcheck integration in go codee
 
 Usage example
 
-First, create file with healthcheck configuration section
+  hlth := healthcheck.NewHandler()
 
-  // app.yml
-	---
-	healthcheck:
-		listen: ':9000'
+  hlth.Add("/ping", func() (healthcheck.State, string) {
+    return healthcheck.StatePassing, "ok"
+  })
+  hlth.Add("/piiiing", func() (healthcheck.State, string) {
+    return healthcheck.StateCritical, "not ok"
+  })
 
-Then you can define healthchecks
-
-	package main
-
-	import (
-		"git.aqq.me/go/app/appconf"
-		"git.aqq.me/go/app/launcher"
-		"github.com/iph0/conf/fileconf"
-		"github.com/kak-tus/healthcheck"
-	)
-
-	func init() {
-		fileLdr, err := fileconf.NewLoader("etc")
-		if err != nil {
-			panic(err)
-		}
-
-		appconf.RegisterLoader("file", fileLdr)
-
-		appconf.Require("file:app.yml")
-	}
-
-	func main() {
-		launcher.Run(func() error {
-			healthcheck.Add("/ping", func() (healthcheck.State, string) {
-				return healthcheck.StatePassing, "ok"
-			})
-			healthcheck.Add("/status", func() (healthcheck.State, string) {
-				return healthcheck.StateCritical, "err"
-			})
-			return nil
-		})
-	}
+  go http.ListenAndServe("0.0.0.0:9000", hlth)
 */
 package healthcheck

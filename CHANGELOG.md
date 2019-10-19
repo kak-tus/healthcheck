@@ -1,3 +1,6 @@
+2019-10-19 v1.0.0
+  - Fully remove app environment support.
+
 2019-04-04 v0.5.3
   - Go modules.
   - Remove request/response logging.

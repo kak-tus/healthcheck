@@ -1,28 +1,23 @@
 package main
 
 import (
-	"git.aqq.me/go/app/appconf"
-	"git.aqq.me/go/app/launcher"
-	"github.com/iph0/conf/fileconf"
+	"net/http"
+
 	"github.com/kak-tus/healthcheck"
 )
 
-func init() {
-	fileLdr := fileconf.NewLoader("etc")
-
-	appconf.RegisterLoader("file", fileLdr)
-
-	appconf.Require("file:app.yml")
-}
-
 func main() {
-	launcher.Run(func() error {
-		healthcheck.Add("/ping", func() (healthcheck.State, string) {
-			return healthcheck.StatePassing, "ok"
-		})
-		healthcheck.Add("/status", func() (healthcheck.State, string) {
-			return healthcheck.StateCritical, "err"
-		})
-		return nil
+	hlth := healthcheck.NewHandler()
+
+	hlth.Add("/ping", func() (healthcheck.State, string) {
+		return healthcheck.StatePassing, "ok"
 	})
+	hlth.Add("/piiiing", func() (healthcheck.State, string) {
+		return healthcheck.StateCritical, "not ok"
+	})
+
+	err := http.ListenAndServe(":9000", hlth)
+	if err != nil && err != http.ErrServerClosed {
+		panic(err)
+	}
 }
